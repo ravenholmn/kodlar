@@ -1,0 +1,45 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class BulletScript : MonoBehaviour
+{
+    public float speed = 100f;
+    public float damage = 10f;
+    public bool timerActive;
+    public float timer;
+
+    private void Awake()
+    {
+        timerActive = true;
+    }
+
+    private void Update()
+    {
+        
+        if (timerActive)
+            BulletTimer();
+        transform.position += transform.forward * speed * Time.deltaTime;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        print("hit " + other.name + "!");
+        Destroy(gameObject);
+        EnemyHealth target = other.transform.GetComponent<EnemyHealth>();
+        if (target != null)
+        {
+            target.Damage(damage);
+            Debug.Log("Enemy health: " + target.health);
+        }
+    }
+    
+    private void BulletTimer()
+    {
+        if (timerActive)
+            timer -= Time.deltaTime;
+
+        if (timer < 0)
+            Destroy(gameObject);
+    }
+}
