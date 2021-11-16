@@ -1,0 +1,22 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class EnemyAttackTower : MonoBehaviour
+{
+    public GameObject tower;
+    
+    private void Awake()
+    {
+        tower = GameObject.Find("Tower");
+    }
+    
+
+    public void Attack(float damage)
+    {
+        Debug.Log("Attack Initiated");
+        TowerHealth health = tower.GetComponent<TowerHealth>();
+        health.Check();
+        health.Damage(damage);
+    }
+}
