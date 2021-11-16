@@ -1,0 +1,62 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class TowerHealth : MonoBehaviour
+{
+    public GameObject hpbar;
+    public GameObject losescr;
+    public float health = 500f;
+    public float healthactual;
+    public int enemykilled;
+    public int enemytokill;
+    public float damageamount;
+    public float healmultiplier;
+
+    public void Start()
+    {
+        healthactual = health;
+        hpbar = GameObject.Find("TowerHPBar");
+        HealthBar hpbarscript = hpbar.GetComponent<HealthBar>();
+        hpbarscript.SetMaxHealth(health);
+        hpbarscript.SetNewHealth(health);
+    }
+
+    public void Check()
+    {
+        Debug.Log("Tower took damage");
+    }
+
+    public void Damage(float amount)
+    {
+        damageamount = amount;
+        health -= amount;
+        HealthBar hpbarscript = hpbar.GetComponent<HealthBar>();
+        hpbarscript.SetNewHealth(health);
+        print("Tower took damage!");
+        Debug.Log("Tower health: " + health);
+        if (health <= 0f)
+        {
+            Die();
+        }
+    }
+
+    public void Heal()
+    {
+        enemykilled++;
+        if (enemykilled == enemytokill && health < healthactual)
+        {
+            enemykilled = 0;
+            health = health + (healmultiplier * damageamount);
+            HealthBar hpbarscript = hpbar.GetComponent<HealthBar>();
+            hpbarscript.SetNewHealth(health);
+        }
+    }
+
+    private void Die()
+    {
+        losescr.SetActive(true);
+        Time.timeScale = 0f;
+        print("ded");
+    }
+}
