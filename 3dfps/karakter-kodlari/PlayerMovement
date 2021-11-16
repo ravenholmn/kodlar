@@ -1,0 +1,198 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class PlayerMovement : MonoBehaviour
+{
+
+    public CharacterController controller;
+    public Collider coll;
+    public GameObject center;
+
+    public float speed = 200f;
+    public float gravity = -9.81f;
+    public float jumpHeight = 4f;
+    public float cooldown;
+    public float timer;
+    public float dashTime;
+    public float dashTimer;
+    public float timerpassive;
+    public float dashSpeed = 50f;
+    public float camFov;
+    public bool timerActive;
+    public bool dashTActive;
+    public bool dashCActive;
+    public int jumpCount = 0;
+    public int dashCount = 0;
+    public bool colliding;
+    public float range;
+
+    public Transform groundCheck;
+    public float groundDistance = 0.2f;
+    public LayerMask groundMask, obstacleMask, whatIsEnemy;
+
+    Vector3 velocity;
+
+    bool isGrounded, isOnObstacle;
+    bool dashAble = true;
+
+    private void Start()
+    {
+        camFov = 70f;
+    }
+
+    void Update()
+    {
+        Camera.main.fieldOfView = camFov;
+
+        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+        isOnObstacle = Physics.CheckSphere(groundCheck.position, groundDistance, obstacleMask);
+
+        if ((isGrounded || isOnObstacle) && velocity.y < 0)
+        {
+            velocity.y = -2f;
+        }
+
+        if (dashAble == true)
+        {
+            Dash();
+        }
+
+        CollisionCheck();
+        CollisionTimer();
+
+        Timers();
+
+        float x = Input.GetAxis("Horizontal");
+        float z = Input.GetAxis("Vertical");
+        
+        Vector3 move = transform.right * x + transform.forward * z;
+
+        controller.Move(move * speed * Time.deltaTime);
+        
+        if (isGrounded || isOnObstacle)
+            jumpCount = 0;
+        
+        if (Input.GetButtonDown("Jump"))
+            Jump();
+
+        velocity.y += gravity * Time.deltaTime;
+
+        controller.Move(velocity * Time.deltaTime);
+    }
+
+    void Jump()
+    {
+        if (isGrounded || isOnObstacle)
+        {
+            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+
+        }
+        else if (!isGrounded || !isOnObstacle)
+        {
+            if (jumpCount == 1)
+                return;
+            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+            jumpCount = 1;
+        }
+    }
+
+    
+    void Dash()
+    {
+        if (Input.GetKeyDown(KeyCode.LeftShift) && dashCount == 0)
+        {
+            if (timer > 0)
+                return;
+
+            timerActive = false;
+            dashTActive = false;
+            
+            velocity.y = -2f;
+            speed = dashSpeed;
+            dashTimer = dashTime;
+            timerpassive = cooldown;
+            dashTActive = true;
+            dashCActive = true;
+            dashCount = 1;
+        }
+        else if (Input.GetKeyDown(KeyCode.LeftShift) && dashCount == 1)
+        {
+            dashTActive = false;
+            velocity.y = -2f;
+            speed = dashSpeed;
+            dashAble = false;
+            dashTimer = dashTime;
+            timer = cooldown;
+
+            dashCount = 0;
+            timerActive = true;
+            dashTActive = true;
+            dashAble = true;
+        }
+    }
+    
+
+    void Timers()
+    {
+        if (timerActive)
+            timer -= Time.deltaTime;
+
+        if (dashCActive)
+            timerpassive -= Time.deltaTime;
+
+        if (dashTActive)
+            dashTimer -= Time.deltaTime;
+
+        if (timer < 0)
+            timer = 0;
+
+        if (timerpassive < 0)
+        {
+            timerpassive = 0;
+            dashCount = 0;
+        }
+
+        if (dashTimer < 0)
+        {
+            dashTimer = 0;
+            speed = 30f;
+        }
+    }
+
+    public float colT;
+    public bool colTAct;
+    public float speedHold;
+
+    void CollisionCheck()
+    {
+        colliding = Physics.CheckSphere(center.transform.position, range, whatIsEnemy);
+        if (colliding)
+        {
+            speedHold = speed;
+            speed = -speedHold;
+            colT = 0.1f;
+            colTAct = true;
+        }
+    }
+
+    void CollisionTimer()
+    {
+        if (colTAct)
+        {
+            colT -= Time.deltaTime;
+            if (colT < 0)
+            {
+                colT = 0;
+                speed = 30f;
+                colTAct = false;
+            }
+        }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(center.transform.position, range);
+    }
+}
