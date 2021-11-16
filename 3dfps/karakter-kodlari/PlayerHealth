@@ -1,0 +1,51 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class PlayerHealth : MonoBehaviour
+{
+    public GameObject hpbar;
+    public GameObject losescr;
+    public float health = 100f;
+    public float healthactual;
+    public int enemykilled;
+    public int enemytokill;
+
+    public void Start()
+    {
+        healthactual = health;
+        hpbar = GameObject.Find("PlayerHPBar");
+        HealthBar hpbarscript = hpbar.GetComponent<HealthBar>();
+        hpbarscript.SetNewHealth(health);
+    }
+
+    public void Damage(float damage)
+    {
+        health -= damage;
+        Debug.Log("Got Hit! Player health: " + health);
+        if (health <= 0f)
+        {
+            Die();
+        }
+        HealthBar hpbarscript = hpbar.GetComponent<HealthBar>();
+        hpbarscript.SetNewHealth(health);
+    }
+
+    public void Heal()
+    {
+        enemykilled++;
+        if (enemykilled == enemytokill && health < healthactual)
+        {
+            enemykilled = 0;
+            health = health + 10f;
+            HealthBar hpbarscript = hpbar.GetComponent<HealthBar>();
+            hpbarscript.SetNewHealth(health);
+        }
+    }
+
+    private void Die()
+    {
+        losescr.SetActive(true);
+        Time.timeScale = 0f;
+    }
+}
