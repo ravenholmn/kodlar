@@ -1,0 +1,20 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class EnemyAttackPlayer : MonoBehaviour
+{
+    public GameObject player;
+    
+    private void Awake()
+    {
+        player = GameObject.Find("Character");
+    }
+    
+
+    public void Attack(float damage)
+    {
+        PlayerHealth health = player.GetComponent<PlayerHealth>();
+        health.Damage(damage);
+    }
+}
