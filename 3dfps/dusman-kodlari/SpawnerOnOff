@@ -1,0 +1,26 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class SpawnerOnOff : MonoBehaviour
+{
+    public GameObject spawnerlist;
+
+    public bool check = true;
+
+    private void Update()
+    {
+        if (check)
+            spawnerlist.SetActive(true);
+        else
+            spawnerlist.SetActive(false);
+    }
+
+    public void Checker()
+    {
+        if (check)
+            check = false;
+        else
+            check = true;
+    }
+}
