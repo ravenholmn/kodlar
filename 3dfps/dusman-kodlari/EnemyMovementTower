@@ -1,0 +1,62 @@
+using UnityEngine;
+using UnityEngine.AI;
+
+public class EnemyMovementTower : MonoBehaviour
+{
+    public float damage;
+    
+    public NavMeshAgent agent;
+    
+    public Transform tower;
+
+    public LayerMask whatIsTower;
+
+    public float timeBetweenAttacks;
+    bool alreadyAttacked;
+
+    public float attackRange;
+    public bool towerInAttackRange;
+
+    private void Awake()
+    {
+        tower = GameObject.Find("The Tower").transform;
+        agent = GetComponent<NavMeshAgent>();
+    }
+
+    private void Update()
+    {
+        towerInAttackRange = Physics.CheckSphere(transform.position, attackRange, whatIsTower);
+        if (!towerInAttackRange)
+        {
+            ChaseTower();
+        }
+        if (towerInAttackRange)
+        {
+            AttackTower();
+        }
+    }
+    
+
+    private void ChaseTower()
+    {
+        agent.SetDestination(tower.position);
+    }
+
+    private void AttackTower()
+    {
+        agent.SetDestination(transform.position);
+        transform.LookAt(tower);
+        if (!alreadyAttacked)
+        {
+            EnemyAttackTower attackTower = GetComponent<EnemyAttackTower>();
+            attackTower.Attack(damage);
+            alreadyAttacked = true;
+            Invoke(nameof(ResetAttack), timeBetweenAttacks);
+        }
+    }
+
+    private void ResetAttack()
+    {
+        alreadyAttacked = false;
+    }
+}
