@@ -1,0 +1,61 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class EnemySpawner : MonoBehaviour
+{
+    public GameObject[] enemies;
+    public Transform spawnpoint;
+
+    public int enemyVar;
+
+    public float startTimeBtwSpawns;
+    public float timeBtwSpawns;
+
+    public float startTimeBtwWaves;
+    public float timeBtwWaves;
+
+    public float enemyCount;
+    public float enemyCap;
+    public float enemyChange;
+
+    private void Start()
+    {
+        timeBtwSpawns = startTimeBtwSpawns;
+        timeBtwWaves = 0;
+    }
+
+    private void Update()
+    {
+        if (enemyCount < enemyChange)
+            enemyVar = 1;
+        else
+            enemyVar = 0;
+
+        if (timeBtwSpawns <= 0 && enemyCount < enemyCap && timeBtwWaves <= 0)
+        {
+            //rand = Random.Range(0, enemies.Length);
+            Instantiate(enemies[enemyVar], spawnpoint.transform.position, Quaternion.identity);
+            timeBtwSpawns = startTimeBtwSpawns;
+            enemyCount++;
+        }
+        else if (timeBtwSpawns > 0)
+        {
+            timeBtwSpawns -= Time.deltaTime;
+        }
+        else if (enemyCount == enemyCap)
+        {
+            timeBtwWaves = startTimeBtwWaves;
+            enemyCount = 0;
+        }
+
+        if (timeBtwWaves > 0)
+        {
+            timeBtwWaves -= Time.deltaTime;
+        }
+
+        
+    }
+    
+    
+}
