@@ -1,0 +1,43 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class NestHealth : MonoBehaviour
+{
+    public GameObject hpbar;
+    public GameObject winscr;
+    public float health;
+    public float timer;
+    public float timerVal;
+    public float damage;
+
+
+    private void Start()
+    {
+        hpbar = GameObject.Find("NestHPBar");
+        HealthBar hpbarscript = hpbar.GetComponent<HealthBar>();
+        hpbarscript.SetMaxHealth(health);
+        hpbarscript.SetNewHealth(health);
+    }
+
+    private void Update()
+    {
+        if (timer <= 0)
+        {
+            health = health - damage;
+            HealthBar hpbarscript = hpbar.GetComponent<HealthBar>();
+            hpbarscript.SetNewHealth(health);
+            timer = timerVal;
+        }
+        else
+            timer -= Time.deltaTime;
+
+        if (health == 0)
+        {
+            Time.timeScale = 0f;
+            winscr.SetActive(true);
+        }
+    }
+    
+
+}
